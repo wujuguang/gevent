@@ -1,6 +1,6 @@
 # Copyright (c) 2012 Denis Bilenko. See LICENSE for details.
 import _socket
-from gevent.hub import get_hub
+from gevent.hub import get_hub, text_type
 
 
 __all__ = ['Resolver']
@@ -31,6 +31,14 @@ class Resolver(object):
         return self.pool.apply_e(self.expected_errors, _socket.gethostbyname_ex, args)
 
     def getaddrinfo(self, *args, **kwargs):
+        # avoid a deadlock: if the main thread holds the import lock, we
+        # mustn't let getaddrinfo try to import encodings.idna on a worker
+        # thread. if we send it a str instead of unicode, it doesn't
+        # attempt the import.
+        if args and isinstance(args[0], text_type):
+            hostname = args[0].encode('idna')
+            args = (hostname, ) + args[1:]
+
         return self.pool.apply_e(self.expected_errors, _socket.getaddrinfo, args, kwargs)
 
     def gethostbyaddr(self, *args, **kwargs):
