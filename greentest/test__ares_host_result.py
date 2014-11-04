@@ -22,11 +22,13 @@ class TestPickle(greentest.TestCase):
     def test2(self):
         return self._test(2)
 
-    if pickle.HIGHEST_PROTOCOL == 3:
+    if pickle.HIGHEST_PROTOCOL >= 3:
         def test3(self):
             return self._test(3)
-    else:
-        assert pickle.HIGHEST_PROTOCOL == 2, pickle.HIGHEST_PROTOCOL
+
+    if pickle.HIGHEST_PROTOCOL >= 4:
+        def test4(self):
+            return self._test(4)
 
 
 if __name__ == '__main__':
