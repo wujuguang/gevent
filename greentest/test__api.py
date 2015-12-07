@@ -34,7 +34,7 @@ class Test(greentest.TestCase):
         def test():
             try:
                 state.append('start')
-                gevent.sleep(DELAY * 2)
+                gevent.sleep(DELAY * 3.0)
             except:
                 state.append('except')
                 # catching GreenletExit

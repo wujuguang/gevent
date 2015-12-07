@@ -122,8 +122,8 @@ class TestEvent_SetThenClear1000(TestEvent_SetThenClear):
 class TestWait(greentest.TestCase):
     N = 5
     count = None
-    timeout = 1
-    period = 0.01
+    timeout = 1 if not greentest.RUNNING_ON_APPVEYOR else 3
+    period = timeout / 100.0
 
     def _sender(self, events, asyncs):
         while events or asyncs:

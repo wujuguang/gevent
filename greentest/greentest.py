@@ -308,9 +308,10 @@ class TestCaseMetaClass(type):
 
 
 class TestCase(TestCaseMetaClass("NewBase", (BaseTestCase,), {})):
-    # Travis is slow and overloaded; Appveyor is usually faster, but at times
-    # it's slow too
-    __timeout__ = 1 if not RUNNING_ON_CI else 3
+    # Travis is slow and overloaded; Appveyor used to be faster, but
+    # as of Dec 2015 it's almost always slower and/or has much worse timer
+    # resolution
+    __timeout__ = 1 if not RUNNING_ON_CI else 5
     switch_expected = 'default'
     error_fatal = True
 
@@ -473,8 +474,8 @@ class _DelayWaitMixin(object):
     if not RUNNING_ON_APPVEYOR:
         _default_delay_max_adj = 0.11
     else:
-        # Timing resolution is poor on Appveyor
-        _default_delay_max_adj = 0.5
+        # Timing resolution is extremely poor on Appveyor
+        _default_delay_max_adj = 0.8
 
     def wait(self, timeout):
         raise NotImplementedError('override me in subclass')
@@ -556,7 +557,6 @@ class GenericGetTestCase(_DelayWaitMixin, TestCase):
         self.cleanup()
 
     def test_raises_timeout_Timeout_exc_customized(self):
-        start = time.time()
         error = RuntimeError('expected error')
         timeout = gevent.Timeout(self._default_wait_timeout, exception=error)
         try:

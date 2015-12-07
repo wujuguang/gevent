@@ -92,7 +92,7 @@ class Test(greentest.TestCase):
         with Timeout(XDELAY, False):
             sleep(XDELAY * 2)
         delta = (time.time() - start)
-        assert delta < XDELAY * 2, delta
+        self.assertTimeWithinRange(delta, 0, XDELAY * 2)
 
         # passing None as seconds disables the timer
         with Timeout(None):
