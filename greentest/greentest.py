@@ -41,6 +41,7 @@ try:
 except ImportError:
     # Py 2.6
     _MAX_LENGTH = 80
+
     def safe_repr(obj, short=False):
         try:
             result = repr(obj)
@@ -90,6 +91,7 @@ if sys.platform.startswith('win'):
 RUNNING_ON_TRAVIS = os.environ.get('TRAVIS')
 RUNNING_ON_APPVEYOR = os.environ.get('APPVEYOR')
 RUNNING_ON_CI = RUNNING_ON_TRAVIS or RUNNING_ON_APPVEYOR
+
 
 class ExpectedException(Exception):
     """An exception whose traceback should be ignored"""
@@ -391,7 +393,6 @@ class TestCase(TestCaseMetaClass("NewBase", (BaseTestCase,), {})):
             self.assertLessEqual(delay, max_time)
             self.assertGreaterEqual(delay, min_time)
 
-
     if not hasattr(BaseTestCase, 'assertGreater'):
         # Compatibility with 2.6, backported from 2.7
         longMessage = False
@@ -415,7 +416,7 @@ class TestCase(TestCaseMetaClass("NewBase", (BaseTestCase,), {})):
                 # it changes the way unicode input is handled
                 return '%s : %s' % (standardMsg, msg)
             except UnicodeDecodeError:
-                return  '%s : %s' % (safe_repr(standardMsg), safe_repr(msg))
+                return '%s : %s' % (safe_repr(standardMsg), safe_repr(msg))
 
         def assertLess(self, a, b, msg=None):
             """Just like self.assertTrue(a < b), but with a nicer default message."""
@@ -440,7 +441,6 @@ class TestCase(TestCaseMetaClass("NewBase", (BaseTestCase,), {})):
             if not a >= b:
                 standardMsg = '%s not greater than or equal to %s' % (safe_repr(a), safe_repr(b))
                 self.fail(self._formatMessage(msg, standardMsg))
-
 
 
 main = unittest.main
@@ -535,7 +535,7 @@ class GenericWaitTestCase(_DelayWaitMixin, TestCase):
         assert result is None, repr(result)
 
 
-class GenericGetTestCase(_DelayWaitMixin,TestCase):
+class GenericGetTestCase(_DelayWaitMixin, TestCase):
 
     Timeout = gevent.Timeout
 
