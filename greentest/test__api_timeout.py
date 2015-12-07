@@ -48,7 +48,7 @@ class Test(greentest.TestCase):
         # An exception will be raised if it's not
         try:
             with Timeout(DELAY) as t:
-                sleep(DELAY * 2)
+                sleep(DELAY * 10)
         except Timeout as ex:
             assert ex is t, (ex, t)
         else:
@@ -57,14 +57,14 @@ class Test(greentest.TestCase):
         # You can customize the exception raised:
         try:
             with Timeout(DELAY, IOError("Operation takes way too long")):
-                sleep(DELAY * 2)
+                sleep(DELAY * 10)
         except IOError as ex:
             assert str(ex) == "Operation takes way too long", repr(ex)
 
         # Providing classes instead of values should be possible too:
         try:
             with Timeout(DELAY, ValueError):
-                sleep(DELAY * 2)
+                sleep(DELAY * 10)
         except ValueError:
             pass
 
@@ -73,7 +73,7 @@ class Test(greentest.TestCase):
         except:
             try:
                 with Timeout(DELAY, sys.exc_info()[0]):
-                    sleep(DELAY * 2)
+                    sleep(DELAY * 10)
                     raise AssertionError('should not get there')
                 raise AssertionError('should not get there')
             except ZeroDivisionError:

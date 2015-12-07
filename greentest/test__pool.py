@@ -255,7 +255,7 @@ TIMEOUT1, TIMEOUT2, TIMEOUT3 = 0.082, 0.035, 0.14
 
 
 class TestPool(greentest.TestCase):
-    __timeout__ = 5
+    __timeout__ = 10
     size = 1
 
     def setUp(self):
@@ -279,14 +279,14 @@ class TestPool(greentest.TestCase):
         res = self.pool.apply_async(sqr, (7, TIMEOUT1,))
         get = TimingWrapper(res.get)
         self.assertEqual(get(), 49)
-        self.assertAlmostEqual(get.elapsed, TIMEOUT1, 1)
+        self.assertTimeoutAlmostEqual(get.elapsed, TIMEOUT1, 1)
 
     def test_async_callback(self):
         result = []
         res = self.pool.apply_async(sqr, (7, TIMEOUT1,), callback=lambda x: result.append(x))
         get = TimingWrapper(res.get)
         self.assertEqual(get(), 49)
-        self.assertAlmostEqual(get.elapsed, TIMEOUT1, 1)
+        self.assertTimeoutAlmostEqual(get.elapsed, TIMEOUT1, 1)
         gevent.sleep(0)  # let's the callback run
         assert result == [49], result
 
@@ -294,7 +294,7 @@ class TestPool(greentest.TestCase):
         res = self.pool.apply_async(sqr, (6, TIMEOUT2 + 0.2))
         get = TimingWrapper(res.get)
         self.assertRaises(gevent.Timeout, get, timeout=TIMEOUT2)
-        self.assertAlmostEqual(get.elapsed, TIMEOUT2, 1)
+        self.assertTimeoutAlmostEqual(get.elapsed, TIMEOUT2, 1)
         self.pool.join()
 
     def test_imap(self):
