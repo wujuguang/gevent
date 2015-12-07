@@ -110,24 +110,24 @@ class Test(greentest.TestCase):
 
     def test_nested_timeout(self):
         with Timeout(DELAY, False):
-            with Timeout(DELAY * 2, False):
-                sleep(DELAY * 3)
+            with Timeout(DELAY * 10, False):
+                sleep(DELAY * 3 * 20)
             raise AssertionError('should not get there')
 
         with Timeout(DELAY) as t1:
-            with Timeout(DELAY * 2) as t2:
+            with Timeout(DELAY * 20) as t2:
                 try:
-                    sleep(DELAY * 3)
+                    sleep(DELAY * 30)
                 except Timeout as ex:
                     assert ex is t1, (ex, t1)
                 assert not t1.pending, t1
                 assert t2.pending, t2
             assert not t2.pending, t2
 
-        with Timeout(DELAY * 2) as t1:
+        with Timeout(DELAY * 20) as t1:
             with Timeout(DELAY) as t2:
                 try:
-                    sleep(DELAY * 3)
+                    sleep(DELAY * 30)
                 except Timeout as ex:
                     assert ex is t2, (ex, t2)
                 assert t1.pending, t1

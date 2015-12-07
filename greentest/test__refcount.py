@@ -109,6 +109,11 @@ def run_interaction(run_client):
     #s.close()
     w = weakref.ref(s._sock)
     s.close()
+    if greentest.RUNNING_ON_APPVEYOR:
+        # The background thread may not have even had a chance to run
+        # yet, sleep again to be sure it does
+        sleep(0.1 + SOCKET_TIMEOUT)
+
     return w
 
 

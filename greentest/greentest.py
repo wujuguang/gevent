@@ -474,7 +474,7 @@ class _DelayWaitMixin(object):
         _default_delay_max_adj = 0.11
     else:
         # Timing resolution is poor on Appveyor
-        _default_delay_max_adj = 0.3
+        _default_delay_max_adj = 0.5
 
     def wait(self, timeout):
         raise NotImplementedError('override me in subclass')
@@ -527,7 +527,7 @@ class GenericWaitTestCase(_DelayWaitMixin, TestCase):
         _default_delay_max_adj = 0.11
     else:
         # Timing resolution is poor on Appveyor
-        _default_delay_max_adj = 0.3
+        _default_delay_max_adj = 0.5
 
     def test_returns_none_after_timeout(self):
         result = self._wait_and_check()

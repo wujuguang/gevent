@@ -255,7 +255,7 @@ TIMEOUT1, TIMEOUT2, TIMEOUT3 = 0.082, 0.035, 0.14
 
 
 class TestPool(greentest.TestCase):
-    __timeout__ = 10
+    __timeout__ = 5 if not greentest.RUNNING_ON_APPVEYOR else 20
     size = 1
 
     def setUp(self):
