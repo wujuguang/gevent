@@ -112,7 +112,10 @@ def run_interaction(run_client):
     if greentest.RUNNING_ON_APPVEYOR:
         # The background thread may not have even had a chance to run
         # yet, sleep again to be sure it does
-        sleep(0.1 + SOCKET_TIMEOUT)
+        try:
+            sleep(0.1 + SOCKET_TIMEOUT)
+        except Exception:
+            pass
 
     return w
 
@@ -133,6 +136,8 @@ def run_and_check(run_client):
 
 
 class Test(greentest.TestCase):
+
+    __timeout__ = 3 # Allow for Appveyor tests extra timeouts
 
     def test_clean_exit(self):
         run_and_check(True)
