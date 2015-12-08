@@ -506,7 +506,7 @@ class TestBasic(greentest.TestCase):
             return return_value
 
         g = gevent.Greenlet(func, 0.01, return_value=5)
-        g.link(lambda x: link_test.append(x))
+        g.link(link_test.append) # use rawlink to avoid timing issues on Appveyor
         assert not g, bool(g)
         assert not g.dead
         assert not g.started
@@ -554,7 +554,7 @@ class TestBasic(greentest.TestCase):
             raise error
 
         g = gevent.Greenlet(func, 0.001, return_value=5)
-        g.link(lambda x: link_test.append(x))
+        g.rawlink(link_test.append) # use rawlink to avoid timing issues on Appveyor
         g.start()
         gevent.sleep(0.1)
         assert not g

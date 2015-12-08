@@ -137,7 +137,7 @@ def run_and_check(run_client):
 
 class Test(greentest.TestCase):
 
-    __timeout__ = 3 # Allow for Appveyor tests extra timeouts
+    __timeout__ = greentest.TestCase.__timeout__ * 2 # Allow for Appveyor tests extra timeouts
 
     def test_clean_exit(self):
         run_and_check(True)
