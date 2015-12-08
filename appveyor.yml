@@ -110,7 +110,7 @@ install:
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   # NOTE: psutil won't install under PyPy.
-  - "%CMD_IN_ENV% pip install -U cython greenlet psutil wheel"
+  - "%CMD_IN_ENV% pip install -U cython greenlet psutil"
 
   - ps: "if(Test-Path(\"${env:PYTHON}\\bin\")) {ls ${env:PYTHON}\\bin;}"
   - ps: "if(Test-Path(\"${env:PYTHON}\\Scripts\")) {ls ${env:PYTHON}\\Scripts;}"
@@ -122,15 +122,17 @@ build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
   # Build the compiled extension and run the project tests
-  # Note that we also do the bdist wheel now so that we only have to
-  # compile the extensions once (with luck). running make.cmd on appveyor
-  # takes 3-5 minutes.
-  - "%CMD_IN_ENV% %PYEXE% setup.py develop bdist_wheel"
+  - "%CMD_IN_ENV% %PYEXE% setup.py develop"
   - "cd greentest && %PYEXE% testrunner.py --config ../known_failures.py && cd .."
 
 after_test:
   # If tests are successful, create a whl package for the project.
-  # Note: Done earlier for speed.
+  # NOTE: Even though it's much faster to create the wheel when we
+  # initially run setup.py develop, the built wheel is faulty (doesn't
+  # include the DLLs). So we live with running the 3-5 minute make.cmd
+  # again.
+  - "%CMD_IN_ENV% pip install -U wheel"
+  - "%CMD_IN_ENV% %PYEXE% setup.py bdist_wheel bdist_wininst"
   - ps: "ls dist"
 
 artifacts:
