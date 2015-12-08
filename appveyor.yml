@@ -110,7 +110,7 @@ install:
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   # NOTE: psutil won't install under PyPy.
-  - "%CMD_IN_ENV% pip install -U cython greenlet psutil"
+  - "%CMD_IN_ENV% pip install -U cython greenlet psutil wheel"
 
   - ps: "if(Test-Path(\"${env:PYTHON}\\bin\")) {ls ${env:PYTHON}\\bin;}"
   - ps: "if(Test-Path(\"${env:PYTHON}\\Scripts\")) {ls ${env:PYTHON}\\Scripts;}"
@@ -122,13 +122,15 @@ build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
   # Build the compiled extension and run the project tests
-  - "%CMD_IN_ENV% %PYEXE% setup.py develop"
+  # Note that we also do the bdist wheel now so that we only have to
+  # compile the extensions once (with luck). running make.cmd on appveyor
+  # takes 3-5 minutes.
+  - "%CMD_IN_ENV% %PYEXE% setup.py develop bdist_wheel"
   - "cd greentest && %PYEXE% testrunner.py --config ../known_failures.py && cd .."
 
 after_test:
   # If tests are successful, create a whl package for the project.
-  - "%CMD_IN_ENV% pip install -U wheel"
-  - "%CMD_IN_ENV% %PYEXE% setup.py bdist_wheel bdist_wininst"
+  # Note: Done earlier for speed.
   - ps: "ls dist"
 
 artifacts:
