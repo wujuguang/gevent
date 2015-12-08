@@ -356,6 +356,10 @@ class TestPoolSpawn(TestDefaultSpawn):
         return 2
 
     def test_pool_full(self):
+        if greentest.RUNNING_ON_APPVEYOR:
+            # We only run 2.7+ on appveyor so safe to use
+            # this API
+            self.skipTest("Fails on appveyor")
         self.init_server()
         short_request = self.send_request('/short')
         long_request = self.send_request('/long')
@@ -363,10 +367,9 @@ class TestPoolSpawn(TestDefaultSpawn):
         gevent.sleep(0.01)
         self.assertPoolFull()
         self.assertPoolFull()
-        if not greentest.RUNNING_ON_APPVEYOR:
-            # XXX Not entirely clear why this fails on appveyor;
-            # underlying socket timeout causing the long_request to close?
-            self.assertPoolFull()
+        # XXX Not entirely clear why this fails (timeout) on appveyor;
+        # underlying socket timeout causing the long_request to close?
+        self.assertPoolFull()
         short_request._sock.close()
         if PY3:
             # We use two makefiles to simulate reading/writing
@@ -375,11 +378,10 @@ class TestPoolSpawn(TestDefaultSpawn):
         # gevent.http and gevent.wsgi cannot detect socket close, so sleep a little
         # to let /short request finish
         gevent.sleep(0.1)
-        if not greentest.RUNNING_ON_APPVEYOR:
-            # XXX: This tends to timeout. Which is weird, because what would have
-            # been the third call to assertPoolFull() DID NOT timeout, hence why it
-            # was removed.
-            self.assertRequestSucceeded()
+        # XXX: This tends to timeout. Which is weird, because what would have
+        # been the third call to assertPoolFull() DID NOT timeout, hence why it
+        # was removed.
+        self.assertRequestSucceeded()
         del long_request
 
     test_pool_full.error_fatal = False
